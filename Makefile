@@ -1,20 +1,27 @@
 CC = clang
+CFLAGS = -c -ffreestanding -target x86_64-unknown-none -nostdlib \
+	-Wall -Wextra -fno-exceptions -fno-rtti
 asmsrc = $(wildcard src/*.asm)
-obj = $(asmsrc:.asm=.o)
+asmobj = $(asmsrc:.asm=.o)
+csrc = $(wildcard src/*.c)
+cobj = $(csrc:.c=.o)
 
 .PHONY: clean run
 
-kernel: $(obj)
-	@ld -n -T src/linker.ld -o brick \
-		$(obj)
+kernel: $(asmobj) $(cobj)
+	@ld --gc-sections -n -T src/linker.ld -o brick \
+		$(asmobj) $(cobj)
 	@mkdir -p isofiles/boot/grub
 	@cp grub.cfg isofiles/boot/grub/
 	@cp brick isofiles/boot/kernel.bin
 	@grub-mkrescue -o brick.iso isofiles
-	@rm src/*.o
+
 
 %.o: %.asm
 	@nasm -felf64 $< -o $@
+
+%.o: %.c
+	@$(CC) $(CFLAGS) -o $@ $<
 
 clean:
 	@rm -rf isofiles
