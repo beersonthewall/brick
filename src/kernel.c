@@ -83,10 +83,21 @@ void terminal_putchar(char c)
     }
 }
 
+void write_newline() {
+  ++terminal_row;
+  terminal_column = 0;
+}
+
 void terminal_write(const char* data, size_t size)
 {
-    for (size_t i = 0; i < size; i++)
+    for (size_t i = 0; i < size; i++) {
+      if(data[i] == 10) {
+        write_newline();
+      }
+      else {
         terminal_putchar(data[i]);
+      }
+    }
 }
 
 void terminal_writestring(const char* data)
@@ -98,8 +109,7 @@ void kstart(long multiboot) {
     /* Initialize terminal interface */
     terminal_initialize();
 
-    /* Newline support is left as an exercise. */
-    terminal_writestring("Hello, kernel World!\n");
+    terminal_writestring("Hello, kernel World!\nMORE TO TEST NEWLINE");
   for(;;){
   }
 }
