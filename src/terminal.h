@@ -41,4 +41,6 @@ void terminal_write(const char* data, size_t size);
 
 void terminal_writestring(const char* data);
 
+char* iota(int value, char* result, int base);
+
 #endif
