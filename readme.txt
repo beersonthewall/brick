@@ -1,2 +1,5 @@
 writing a simple kernel to learn.
-most boot code from: https://os.phil-opp.com/first-edition/.
+
+Boot code in boot.asm, long_mode_start.asm, and multiboot_header.asm is
+from https://os.phil-opp.com/first-edition/.
+
