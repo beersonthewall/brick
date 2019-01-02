@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include "terminal.h"
 #include "multiboot.h"
+#include "memory.h"
 
 void kstart(uint32_t* multiboot) {
     /* Initialize terminal interface */
@@ -8,8 +9,10 @@ void kstart(uint32_t* multiboot) {
     terminal_writestring("Hello, kernel World!\n"
                          "MORE TO TEST NEWLINE\n");
 
-    memory_map* memInfo = (memory_map*) get_tag(MEM_MAP, multiboot);
+    int testInt = 1000;
+    print('d', testInt);
 
-    terminal_writestring("MemoryMap found");
+    //    init(multiboot);
+
     for(;;){}
 }

@@ -1,7 +1,13 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdarg.h>
 #include "terminal.h"
+
+/*
+ * Terminal that writes to the VGA buffer. Not threadsafe. Must call
+ * terminal_initialize before using.
+ */
 
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
@@ -63,6 +69,8 @@ void terminal_putchar(char c) {
         if (++terminal_row == VGA_HEIGHT)
             terminal_row = 0;
     }
+    if(c == 10)
+      write_newline();
 }
 
 void write_newline() {
@@ -86,25 +94,66 @@ void terminal_writestring(const char* data)
     terminal_write(data, strlen(data));
 }
 
-char* iota(int value, char* result, int base) {
-  if(base < 2 || base > 36) { *result = '\0'; return result;}
 
-  char* ptr = result, *ptr1 = result, tmp_char;
-  int tmp_value;
+void print(const char type, ...)
+{
+  va_list args;
+  // assumed to be 1 for now.
+  va_start(args, type);
 
-  do {
-    tmp_value = value;
-    value /= base;
-    *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + (tmp_value - value * base)];
-  } while(value);
+  switch(type){
+    case 'd' :
+      {
+        int val = va_arg(args, int);
+        char buf[65];
+        buf[64] = '0';
+        int temp;
+        int i = 0;
 
-  if(tmp_value < 0) *ptr++ = '-';
-  *ptr-- = '\0';
+        do{
+          temp = val;
+          val /= 10;
 
-  while(ptr1 < ptr) {
-    tmp_char = *ptr;
-    *ptr-- = *ptr1;
-    *ptr1++ = tmp_char;
+          if(i == 64){
+            for(int j = i; j >= 0; j--){
+              terminal_putchar(buf[j]);
+            }
+            i = 0;
+          }
+
+          buf[i] =  "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (temp - val * 10)];
+          i++;
+        } while(val);
+
+        for(int j = i-1; j >= 0; j--){
+          terminal_putchar(buf[j]);
+        }
+      }
+      break;
+    default:
+      break;
   }
-  return result;
+  va_end(args);
+}
+
+int convert_int(int value, int radix)
+{
+  int new[64];
+  for(int i=0; i < 64; i++){
+    new[i] = 0;
+  }
+
+  int digit = 0;
+  while(value != 0){
+    new[digit] = value % radix;
+    digit++;
+    value = value / radix;
+  }
+
+  int new_val = 0;
+  for(int i = digit; digit >= 0; digit--){
+    new_val += new[i]*radix*digit;
+  }
+
+  return new_val;
 }
