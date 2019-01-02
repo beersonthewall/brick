@@ -28,6 +28,13 @@ enum tag {
 };
 
 typedef struct map_entry map_entry;
+struct map_entry {
+  uint64_t base;
+  uint64_t length;
+  uint64_t type;
+  uint32_t res;
+};
+
 typedef struct memory_map memory_map;
 struct memory_map {
   uint32_t type;
@@ -37,11 +44,29 @@ struct memory_map {
   map_entry* first;
 };
 
-struct map_entry {
-  uint64_t base;
-  uint64_t length;
-  uint64_t type;
-  uint32_t res;
+typedef struct elf_section_header elf_section_header;
+struct elf_section_header {
+  uint32_t sh_name_index;
+  uint32_t sh_type;
+  uint64_t sh_flags;
+  uint64_t sh_addr;
+  uint64_t sh_offset;
+  uint64_t sh_size;
+  uint32_t sh_link;
+  uint32_t sh_info;
+  uint64_t sh_addralign;
+  uint64_t sh_entsize;
+};
+
+typedef struct elf_symbols elf_symbols;
+struct elf_symbols {
+  uint32_t type;
+  uint32_t size;
+  uint16_t num;
+  uint16_t entsize;
+  uint16_t shndx;
+  uint16_t res;
+  elf_section_header* sh_table;
 };
 
 void* get_tag(enum tag tg, uint32_t* multiboot);
