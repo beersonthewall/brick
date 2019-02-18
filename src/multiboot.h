@@ -32,7 +32,7 @@ enum tag {
   IMG_LOAD_BASE = 21,
 };
 
-typedef struct basic_mem_info;
+typedef struct basic_mem_info basic_mem_info;
 struct basic_mem_info {
   uint32_t type;
   uint32_t size;
