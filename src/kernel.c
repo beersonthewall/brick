@@ -3,16 +3,18 @@
 #include "multiboot.h"
 #include "memory.h"
 
+void init(uint32_t* multiboot){
+  
+}
+
 void kstart(uint32_t* multiboot) {
-    /* Initialize terminal interface */
-    terminal_initialize();
-    terminal_writestring("Hello, kernel World!\n"
-                         "MORE TO TEST NEWLINE\n");
+  /* Initialize terminal interface */
+  terminal_initialize();
+  terminal_writestring("Hello, kernel World!\n"
+                       "MORE TO TEST NEWLINE\n");
 
-    int testInt = 1000;
-    print('d', testInt);
+  print('d', multiboot);
+  mm_init(multiboot);
 
-    //    init(multiboot);
-
-    for(;;){}
+  for(;;){}
 }

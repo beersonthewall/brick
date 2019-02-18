@@ -3,6 +3,11 @@
 
 #include <stdint.h>
 
+/*
+ * Contains structures for interacting with the multiboot information provided
+ * by a multiboot compliant bootloader.
+ */
+
 enum tag {
   BOOT_CMD_LINE = 1,
   NAME = 2,
@@ -25,6 +30,14 @@ enum tag {
   EFI_IMG_HNDL_32 = 19,
   EFI_IMG_HNDL_64 = 20,
   IMG_LOAD_BASE = 21,
+};
+
+typedef struct basic_mem_info;
+struct basic_mem_info {
+  uint32_t type;
+  uint32_t size;
+  uint32_t mem_lower;
+  uint32_t mem_upper;
 };
 
 typedef struct map_entry map_entry;

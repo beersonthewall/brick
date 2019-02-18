@@ -5,6 +5,9 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#define ONE_KB 1024
+
+
 typedef struct mmap mmap;
 struct mmap {
   void* begin_addr;
@@ -13,6 +16,6 @@ struct mmap {
   mmap* next;
 };
 
-void init(uint32_t* multiboot);
+void mm_init(uint32_t* multiboot);
 
 #endif
