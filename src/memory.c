@@ -23,8 +23,20 @@ void mm_init(uint32_t* multiboot) {
 
   mm_bitmap_size = (((info->mem_upper / ONE_KB) + 1) * 256) / 8;
   mm_bitmap = (void*) &end;
-  int entries = (mem_map->size - 4 * sizeof(uint32_t)) / mem_map->entry_sz;
+
+  // zero out bitmap.
+  size_t size = mm_bitmap_size;
+  unsigned char zero = 0x00;
+  char* map = mm_bitmap;
+  while(size--)
+    *map++ = zero;
+
+  long entries = ((mem_map->size - 4) * sizeof(uint32_t)) / mem_map->entry_sz;
+  print('d', entries);
   for(int i = 0; i < entries; i++) {
     map_entry* entry = (map_entry*) mem_map + (mem_map->entry_sz * i);
+    // TODO
+    terminal_writestring("loop");
+    print("d", i);
   }
 }
