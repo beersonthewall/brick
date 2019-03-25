@@ -31,12 +31,16 @@ void mm_init(uint32_t* multiboot) {
   while(size--)
     *map++ = zero;
 
-  long entries = ((mem_map->size - 4) * sizeof(uint32_t)) / mem_map->entry_sz;
-  print('d', entries);
-  for(int i = 0; i < entries; i++) {
+  if(mem_map->entry_sz == 0){
+      terminal_writestring("\nzero\n");
+  }
+  else {
+  long entries = ((mem_map->size - 4) * sizeof(uint32_t)) / (mem_map->entry_sz);
+  }
+  /*  for(int i = 0; i < entries; i++) {
     map_entry* entry = (map_entry*) mem_map + (mem_map->entry_sz * i);
     // TODO
     terminal_writestring("loop");
     print("d", i);
-  }
+    }*/
 }
