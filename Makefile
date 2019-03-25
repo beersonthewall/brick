@@ -1,7 +1,7 @@
 CC=clang-6.0
 CFLAGS= -c -ffreestanding -target x86_64-unknown-none -nostdlib \
 	-Wall -Wextra -fno-exceptions -fno-rtti -Iinclude -Isrc \
-	-mno-sse -mno-mmx -mno-avx
+	-mno-sse -mno-mmx -mno-avx -g -fno-omit-frame-pointer
 asmsrc = $(wildcard src/*.asm)
 asmobj = $(asmsrc:.asm=.o)
 csrc = $(wildcard src/*.c)
@@ -31,8 +31,8 @@ clean:
 
 run:
 	make
-	qemu-system-x86_64 -m 4G -cdrom brick.iso
+	qemu-system-x86_64 -m 2G -cdrom brick.iso
 
 debug:
 	make
-	qemu-system-x86_64 -s -S -d int,cpu_reset -m 4G -cdrom brick.iso
+	qemu-system-x86_64 -s -S -d int,cpu_reset -m 2G -cdrom brick.iso

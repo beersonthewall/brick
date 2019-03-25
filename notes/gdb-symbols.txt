@@ -1,0 +1,7 @@
+Getting debug symbols for gdb when remote debug on qemu:
+
+run qemu with -s and -S so it pauses.
+gdb brick
+target remote localhost:1234
+load brick
+-- now gdb should have symbols
