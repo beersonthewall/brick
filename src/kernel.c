@@ -12,9 +12,6 @@ void kstart(uint32_t* multiboot) {
   terminal_initialize();
   terminal_writestring("Hello, kernel World!\n"
                        "MORE TO TEST NEWLINE\n");
-
-  print('d', multiboot);
   mm_init(multiboot);
-
   for(;;){}
 }

@@ -6,7 +6,8 @@
 #define FRAMES
 #define FRAME_SIZE
 
-extern void end;
+// Linker tag for end of the kernel. Placed immediately below the stack.
+extern void _end;
 
 char* mm_bitmap;
 size_t mm_bitmap_size;
@@ -17,30 +18,16 @@ void mm_init(uint32_t* multiboot) {
   basic_mem_info* info = (basic_mem_info*) get_tag(BASIC_MEM_INFO, multiboot);
   terminal_writestring("\nMemoryMap found\n");
 
-  // NOTE / TODO for now I only want to find out where the multiboot
-  // info is and mark that as used. Will not use low memory ( < 1MiB)
-  // so it won't be possible to overwrite the kernel data.
-
   mm_bitmap_size = (((info->mem_upper / ONE_KB) + 1) * 256) / 8;
-  mm_bitmap = (void*) &end;
+  mm_bitmap = (void*)&_end;
+  long entries = ((mem_map->size - 4) * sizeof(uint32_t)) / (mem_map->entry_sz);
 
   // zero out bitmap.
   size_t size = mm_bitmap_size;
-  unsigned char zero = 0x00;
   char* map = mm_bitmap;
-  while(size--)
-    *map++ = zero;
+  while(size--){
+    *map++ = 0x00;
+  }
 
-  if(mem_map->entry_sz == 0){
-      terminal_writestring("\nzero\n");
-  }
-  else {
-  long entries = ((mem_map->size - 4) * sizeof(uint32_t)) / (mem_map->entry_sz);
-  }
-  /*  for(int i = 0; i < entries; i++) {
-    map_entry* entry = (map_entry*) mem_map + (mem_map->entry_sz * i);
-    // TODO
-    terminal_writestring("loop");
-    print("d", i);
-    }*/
+  terminal_writestring("Physical memory bitmap has been zeroed out.");
 }
