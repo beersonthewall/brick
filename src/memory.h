@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 #define ONE_KB 1024
-
+#define FOUR_KB 4096
 
 typedef struct mmap mmap;
 struct mmap {

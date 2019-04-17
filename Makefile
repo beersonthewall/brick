@@ -35,4 +35,4 @@ run:
 
 debug:
 	make
-	qemu-system-x86_64 -s -S -d int,cpu_reset -m 2G -cdrom brick.iso
+	qemu-system-x86_64 -s -S -d int,cpu_reset,guest_errors -m 2G -cdrom brick.iso
