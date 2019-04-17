@@ -95,13 +95,14 @@ void terminal_writestring(const char* data)
 }
 
 
-void print(const char type, ...)
+void print(char type, ...)
 {
   va_list args;
   // assumed to be 1 for now.
   va_start(args, type);
 
   switch(type){
+    case 'l': //fall through.
     case 'd' :
       {
         int val = va_arg(args, int);

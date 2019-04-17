@@ -43,6 +43,6 @@ void terminal_writestring(const char* data);
 
 void write_newline();
 
-void print(const char type, ...);
+void print(char type, ...);
 
 #endif
