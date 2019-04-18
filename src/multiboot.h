@@ -44,7 +44,7 @@ typedef struct map_entry map_entry;
 struct map_entry {
   uint64_t base;
   uint64_t length;
-  uint64_t type;
+  uint32_t type;
   uint32_t res;
 };
 
