@@ -1,5 +1,4 @@
 global start
-global stack_top
 extern long_mode_start
 section .text
 bits 32

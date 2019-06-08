@@ -11,16 +11,17 @@ void* get_tag(enum tag tg, uint32_t* multiboot) {
   uintptr_t loc = 2*sizeof(uint32_t) + (uintptr_t) multiboot;
 
   void* found_tg = 0;
-  bool cond = true;
-  while(cond) {
+  bool at_end = false;
+  while(!at_end) {
     uint32_t type = *((uint32_t*)loc);
     uint32_t sz = *((uint32_t*) (loc + sizeof(uint32_t)));
 
     if(type == 0 && sz == 8) {
-      cond = false;
+      at_end = true;
     }
     if(type == tg) {
       found_tg = (uint32_t*) loc;
+      break;
     }
 
     loc += sz;
