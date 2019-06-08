@@ -45,8 +45,8 @@ struct map_entry {
   uint64_t base;
   uint64_t length;
   uint32_t type;
-  uint32_t res;
-};
+  uint32_t res; // reserved space, should be zero.
+}__attribute__((packed));
 
 typedef struct memory_map memory_map;
 struct memory_map {
@@ -54,8 +54,8 @@ struct memory_map {
   uint32_t size;
   uint32_t entry_sz;
   uint32_t entry_v;
-  map_entry* first;
-};
+  struct map_entry entries[0];
+}__attribute__((packed));
 
 typedef struct elf_section_header elf_section_header;
 struct elf_section_header {
