@@ -39,10 +39,11 @@ void mm_init(uint32_t* multiboot) {
   // Address of the mutliboot struct + it's size. Avoids overwriting it.
   mm_bitmap = (void*) multiboot + ((uint32_t) *multiboot);
 
+  // Initially mark all pages as used.
   size_t size = mm_bitmap_size;
   char* map = mm_bitmap;
   while(size--){
-    *map++ = 0x00;
+    *map++ = 0xFF;
   }
 
   debug("Entries: ", 'l', entries);
@@ -55,11 +56,17 @@ void mm_init(uint32_t* multiboot) {
     debug("type: ", 'd', entry->type);
 
     // Type of 1 == free, any other value is used in some way.
-    if(entry->type != 1){
-      // TODO mark all used memory addresses.
+    if(entry->type == 1){
+      long end_addr = (long) entry->base + entry->length;
+      for(long addr = (long) entry->base; addr < end_addr; addr += FOUR_KB){
+        mm_bitmap[(addr / FOUR_KB) / 8] |=
+          1 << ((8 - ((addr / FOUR_KB) % 8)) - 1);
+      }
     }
     entry = &mem_map->entries[i];
   }
+
+  // TODO mark kernel and bitmap as used memory.
 
   terminal_writestring("\nDone mapping memory regions.");
 }
