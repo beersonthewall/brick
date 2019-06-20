@@ -9,13 +9,17 @@
 char* mm_bitmap;
 size_t mm_bitmap_size;
 
+// start and end of the kernel.
+extern void _start;
+extern void _end;
+
 // PHYSICAL MEMORY FUNCTIONS
 
 void pfree(void* paddr){
   // TODO
 }
 
-void* palloc(){
+void* palloc(size_t size){
   // TODO
   return 0x00;
 }
@@ -46,27 +50,25 @@ void mm_init(uint32_t* multiboot) {
     *map++ = 0xFF;
   }
 
-  debug("Entries: ", 'l', entries);
-
   map_entry* entry = mem_map->entries;
   for(long i = 0; i < entries; i++) {
-
-    debug("addr: ", 'd', entry->base);
-    debug("len: ", 'd', entry->length);
-    debug("type: ", 'd', entry->type);
 
     // Type of 1 == free, any other value is used in some way.
     if(entry->type == 1){
       long end_addr = (long) entry->base + entry->length;
       for(long addr = (long) entry->base; addr < end_addr; addr += FOUR_KB){
-        mm_bitmap[(addr / FOUR_KB) / 8] |=
-          1 << ((8 - ((addr / FOUR_KB) % 8)) - 1);
+        mm_bitmap[(addr / FOUR_KB) / 8] &=
+          ~ (1 << ((8 - ((addr / FOUR_KB) % 8)) - 1));
       }
     }
     entry = &mem_map->entries[i];
   }
 
-  // TODO mark kernel and bitmap as used memory.
-
+  // Mark the kernel, multiboot struct, and the bitmap itself
+  // as used.
+  ptrdiff_t end_used = (ptrdiff_t) &_end + (&mm_bitmap + mm_bitmap_size);
+  for(long addr = &_start; addr <= end_used; addr+=FOUR_KB){
+    mm_bitmap[(addr / FOUR_KB) / 8] |= (8 - ((addr / FOUR_KB) % 8)) - 1;
+  }
   terminal_writestring("\nDone mapping memory regions.");
 }
