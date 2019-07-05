@@ -13,21 +13,24 @@ size_t mm_bitmap_size;
 extern void _start;
 extern void _end;
 
-// PHYSICAL MEMORY FUNCTIONS
-
-void pfree(void* paddr){
-  // TODO
-}
-
-void* palloc(size_t size){
-  // TODO
-  return 0x00;
-}
-
 void debug(const char* msg, char typ, long val){
     terminal_writestring(msg);
     print(typ, val);
     write_newline();
+}
+
+void unmark(void* phys_addr, size_t sz) {
+  ptrdiff_t end = (ptrdiff_t) phys_addr + sz;
+  for(ptrdiff_t i = (ptrdiff_t) phys_addr; i <= end; i+= FOUR_KB){
+    mm_bitmap[PAGE_NO(i)] &= ~ (1 << ((8 - ((i / FOUR_KB) % 8)) - 1));
+  }
+}
+
+void mark(void* phys_addr, size_t sz){
+  ptrdiff_t end = (ptrdiff_t) phys_addr + sz;
+  for(ptrdiff_t i = (ptrdiff_t) phys_addr; i <= end; i+= FOUR_KB){
+    mm_bitmap[PAGE_NO(i)] |= (8 - ((i / FOUR_KB) % 8)) - 1;
+  }
 }
 
 /*
@@ -57,7 +60,7 @@ void mm_init(uint32_t* multiboot) {
     if(entry->type == 1){
       long end_addr = (long) entry->base + entry->length;
       for(long addr = (long) entry->base; addr < end_addr; addr += FOUR_KB){
-        mm_bitmap[(addr / FOUR_KB) / 8] &=
+        mm_bitmap[PAGE_NO(addr)] &=
           ~ (1 << ((8 - ((addr / FOUR_KB) % 8)) - 1));
       }
     }
@@ -68,7 +71,7 @@ void mm_init(uint32_t* multiboot) {
   // as used.
   ptrdiff_t end_used = (ptrdiff_t) &_end + (&mm_bitmap + mm_bitmap_size);
   for(long addr = &_start; addr <= end_used; addr+=FOUR_KB){
-    mm_bitmap[(addr / FOUR_KB) / 8] |= (8 - ((addr / FOUR_KB) % 8)) - 1;
+    mm_bitmap[PAGE_NO(addr)] |= (8 - ((addr / FOUR_KB) % 8)) - 1;
   }
   terminal_writestring("\nDone mapping memory regions.");
 }
