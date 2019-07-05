@@ -8,9 +8,12 @@
 #define ONE_KB 1024
 #define FOUR_KB 4096
 
-void pfree(void* paddr);
+#define PAGE_NO(addr) (size_t) ((addr / FOUR_KB) / 8)
 
-void* palloc(size_t size);
+
+void unmark(void*, size_t);
+
+void mark(void*, size_t);
 
 void mm_init(uint32_t* multiboot);
 
