@@ -3,10 +3,7 @@
 #include "multiboot.h"
 #include "memory.h"
 
-void init(uint32_t* multiboot){
-  
-}
-
+// Kernel entry point.
 void kstart(uint32_t* multiboot) {
   /* Initialize terminal interface */
   terminal_initialize();
