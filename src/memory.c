@@ -20,15 +20,15 @@ void debug(const char* msg, char typ, long val){
 }
 
 void unmark(void* phys_addr, size_t sz) {
-  ptrdiff_t end = (ptrdiff_t) phys_addr + sz;
-  for(ptrdiff_t i = (ptrdiff_t) phys_addr; i <= end; i+= FOUR_KB){
+  uint64_t end = (uint64_t) phys_addr + sz;
+  for(uint64_t i = (uint64_t) phys_addr; i <= end; i+= FOUR_KB){
     mm_bitmap[PAGE_NO(i)] &= ~ (1 << ((8 - ((i / FOUR_KB) % 8)) - 1));
   }
 }
 
 void mark(void* phys_addr, size_t sz){
-  ptrdiff_t end = (ptrdiff_t) phys_addr + sz;
-  for(ptrdiff_t i = (ptrdiff_t) phys_addr; i <= end; i+= FOUR_KB){
+  uint64_t end = (uint64_t) phys_addr + sz;
+  for(uint64_t i = (uint64_t) phys_addr; i <= end; i+= FOUR_KB){
     mm_bitmap[PAGE_NO(i)] |= (8 - ((i / FOUR_KB) % 8)) - 1;
   }
 }
@@ -58,8 +58,8 @@ void mm_init(uint32_t* multiboot) {
 
     // Type of 1 == free, any other value is used in some way.
     if(entry->type == 1){
-      long end_addr = (long) entry->base + entry->length;
-      for(long addr = (long) entry->base; addr < end_addr; addr += FOUR_KB){
+      uint64_t end_addr = (uint64_t) entry->base + entry->length;
+      for(uint64_t addr = (uint64_t) entry->base; addr < end_addr; addr += FOUR_KB){
         mm_bitmap[PAGE_NO(addr)] &=
           ~ (1 << ((8 - ((addr / FOUR_KB) % 8)) - 1));
       }
@@ -69,9 +69,10 @@ void mm_init(uint32_t* multiboot) {
 
   // Mark the kernel, multiboot struct, and the bitmap itself
   // as used.
-  ptrdiff_t end_used = (ptrdiff_t) &_end + (&mm_bitmap + mm_bitmap_size);
-  for(long addr = &_start; addr <= end_used; addr+=FOUR_KB){
+  uint64_t end_used =
+    (uint64_t) &_end + ((uint64_t) mm_bitmap + mm_bitmap_size);
+  for(uint64_t addr = (uint64_t) &_start; addr <= end_used; addr+=FOUR_KB){
     mm_bitmap[PAGE_NO(addr)] |= (8 - ((addr / FOUR_KB) % 8)) - 1;
   }
-  terminal_writestring("\nDone mapping memory regions.");
+  terminal_writestring("Done marking physical pages as used.");
 }
